@@ -7,6 +7,13 @@ namespace restapi.Models
         public string Message { get => "Transition not valid for current state"; }
     }
 
+    public class InvalidApproverError
+    {
+        public int ErrorCode { get => 100; }
+
+        public string Message { get => "Approver not valid for current state"; }
+    }
+
     public class EmptyTimecardError
     {
         public int ErrorCode { get => 101; }

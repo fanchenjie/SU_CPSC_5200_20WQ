@@ -129,7 +129,7 @@ namespace restapi.Controllers
 
             if (timecard != null)
             {
-                if (timecard.Status != TimecardStatus.Draft)
+                if (timecard.Status != TimecardStatus.Draft && timecard.Status != TimecardStatus.Submitted)
                 {
                     return StatusCode(409, new InvalidStateError() { });
                 }
@@ -137,6 +137,42 @@ namespace restapi.Controllers
                 var annotatedLine = timecard.AddLine(documentLine);
 
                 repository.Update(timecard);
+                
+                return Ok(annotatedLine);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+
+        // fanchenjie
+        [HttpPost("{id:guid}/lines/{lineId:guid}")]
+        [Produces(ContentTypes.TimesheetLine)]
+        [ProducesResponseType(typeof(TimecardLine), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(InvalidStateError), 409)]
+        public IActionResult ReplaceLine(Guid id, Guid lineId, [FromBody] DocumentLine documentLine)
+        {
+            logger.LogInformation($"Looking for timesheet {id}");
+
+            Timecard timecard = repository.Find(id);
+
+            if (timecard != null)
+            {
+
+                if (timecard.Status != TimecardStatus.Draft && timecard.Status != TimecardStatus.Submitted)
+                {
+                    return StatusCode(409, new InvalidStateError() { });
+                }
+
+                var annotatedLine = timecard.ReplaceLine(lineId, documentLine);
+
+                repository.Update(timecard);
+
+                
+                
 
                 return Ok(annotatedLine);
             }
@@ -145,6 +181,41 @@ namespace restapi.Controllers
                 return NotFound();
             }
         }
+
+        [HttpPatch("{id:guid}/lines/{lineId:guid}")]
+        [Produces(ContentTypes.TimesheetLine)]
+        [ProducesResponseType(typeof(TimecardLine), 200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(typeof(InvalidStateError), 409)]
+        public IActionResult UpdateLine(Guid id, Guid lineId, [FromBody] DocumentLine documentLine)
+        {
+            logger.LogInformation($"Looking for timesheet {id}");
+
+            Timecard timecard = repository.Find(id);
+
+            if (timecard != null)
+            {
+
+                if (timecard.Status != TimecardStatus.Draft && timecard.Status != TimecardStatus.Submitted)
+                {
+                    return StatusCode(409, new InvalidStateError() { });
+                }
+
+                var annotatedLine = timecard.UpdateLine(lineId, documentLine);
+
+                repository.Update(timecard);
+
+                
+                
+
+                return Ok(annotatedLine);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        // fanchenjie
 
         [HttpGet("{id:guid}/transitions")]
         [Produces(ContentTypes.Transitions)]
@@ -380,6 +451,7 @@ namespace restapi.Controllers
         [ProducesResponseType(typeof(Transition), 200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(typeof(InvalidStateError), 409)]
+        [ProducesResponseType(typeof(InvalidApproverError), 409)]
         [ProducesResponseType(typeof(EmptyTimecardError), 409)]
         public IActionResult Approve(Guid id, [FromBody] Approval approval)
         {
@@ -395,6 +467,13 @@ namespace restapi.Controllers
                 }
 
                 var transition = new Transition(approval, TimecardStatus.Approved);
+                 
+
+                if(timecard.Employee == transition.Event.Person)
+                {
+                    return StatusCode(409, new InvalidApproverError() { });
+                }
+
 
                 logger.LogInformation($"Adding approval transition {transition}");
 

@@ -89,6 +89,7 @@ namespace restapi.Models
                         Relationship = ActionRelationship.RecordLine,
                         Reference = $"/timesheets/{UniqueIdentifier}/lines"
                     });
+                    
 
                     break;
 
@@ -115,6 +116,14 @@ namespace restapi.Models
                         Type = ContentTypes.Approval,
                         Relationship = ActionRelationship.Approve,
                         Reference = $"/timesheets/{UniqueIdentifier}/approval"
+                    });
+
+                    links.Add(new ActionLink()
+                    {
+                        Method = Method.Post,
+                        Type = ContentTypes.TimesheetLine,
+                        Relationship = ActionRelationship.RecordLine,
+                        Reference = $"/timesheets/{UniqueIdentifier}/lines"
                     });
 
                     break;
@@ -165,6 +174,17 @@ namespace restapi.Models
                 });
             }
 
+            if (this.Status == TimecardStatus.Draft || this.Status == TimecardStatus.Cancelled)
+            {
+                links.Add(new DocumentLink()
+                {
+                    Method = Method.Delete,
+                    Type = ContentTypes.Timesheet,
+                    Relationship = DocumentRelationship.Timesheets,
+                    Reference = $"/timesheets/{UniqueIdentifier}"
+                });
+            }
+
             return links;
         }
 
@@ -176,6 +196,62 @@ namespace restapi.Models
 
             return annotatedLine;
         }
+
+        // fanchenjie
+        public TimecardLine ReplaceLine(Guid lineId, DocumentLine documentLine)
+        {
+            // if (Lines.Any(l => l.UniqueIdentifier == lineId))
+            // {
+            //     Lines.Remove(l => l.UniqueIdentifier == lineId);
+            // }
+            //int index = 0;
+
+            for (int i=0; i<Lines.Count; i++) {
+                if (Lines[i].UniqueIdentifier == lineId) {
+                    Lines.RemoveAt(i);
+                    //index = i;
+                }
+            }
+
+            var annotatedLine = new TimecardLine(documentLine);
+
+            Lines.Add(annotatedLine);
+
+            return annotatedLine;
+
+            // var annotatedLine = new TimecardLine(documentLine);
+
+            // Lines.Add(annotatedLine);
+
+            // return annotatedLine;
+
+        }
+
+        public TimecardLine UpdateLine(Guid lineId, DocumentLine documentLine)
+        {
+            // if (Lines.Any(l => l.UniqueIdentifier == lineId))
+            // {
+            //     Lines.Remove(l => l.UniqueIdentifier == lineId);
+            // }
+            int index = 0;
+
+            for (int i=0; i<Lines.Count; i++) {
+                if (Lines[i].UniqueIdentifier == lineId) {
+                    Lines[i].Update(documentLine);
+                    index = i;
+                }
+            }
+
+            return Lines[index];
+
+            // var annotatedLine = new TimecardLine(documentLine);
+
+            // Lines.Add(annotatedLine);
+
+            // return annotatedLine;
+
+        }
+        // fanchenjie
 
         public bool CanBeDeleted()
         {
