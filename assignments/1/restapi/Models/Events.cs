@@ -65,7 +65,7 @@ namespace restapi.Models
 
     public class Approval : Event
     {
-        [BsonIgnore]
+        [BsonIgnore] 
         public int Approver { get => Person; set { Person = value; } }
 
         public override string ToString()
@@ -73,4 +73,17 @@ namespace restapi.Models
             return PublicJsonSerializer.SerializeObjectIndented(this);
         }
     }
+    
+    // public class backDraft : Event
+    // {
+    //     [BsonIgnore] 
+    //     public int Drafter { get => Person; set { Person = value; } }
+
+    //     public override string ToString()
+    //     {
+    //         return PublicJsonSerializer.SerializeObjectIndented(this);
+    //     }
+    // }
+    
+    
 }

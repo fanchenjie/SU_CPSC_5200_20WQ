@@ -90,7 +90,21 @@ namespace restapi.Models
                         Reference = $"/timesheets/{UniqueIdentifier}/lines"
                     });
                     
+                    links.Add(new ActionLink()
+                    {
+                        Method = Method.Post,
+                        Type = ContentTypes.TimesheetLine,
+                        Relationship = ActionRelationship.RecordLine,
+                        Reference = $"/timesheets/{UniqueIdentifier}/lines/{UniqueIdentifier}"
+                    });
 
+                    links.Add(new ActionLink()
+                    {
+                        Method = Method.Patch,
+                        Type = ContentTypes.TimesheetLine,
+                        Relationship = ActionRelationship.RecordLine,
+                        Reference = $"/timesheets/{UniqueIdentifier}/lines/{UniqueIdentifier}"
+                    });
                     break;
 
                 case TimecardStatus.Submitted:
@@ -117,15 +131,14 @@ namespace restapi.Models
                         Relationship = ActionRelationship.Approve,
                         Reference = $"/timesheets/{UniqueIdentifier}/approval"
                     });
-
-                    links.Add(new ActionLink()
-                    {
-                        Method = Method.Post,
-                        Type = ContentTypes.TimesheetLine,
-                        Relationship = ActionRelationship.RecordLine,
-                        Reference = $"/timesheets/{UniqueIdentifier}/lines"
-                    });
-
+                    
+                    // links.Add(new ActionLink()
+                    // {
+                    //     Method = Method.Post,
+                    //     Type = ContentTypes.TimesheetLine,
+                    //     Relationship = ActionRelationship.RecordLine,
+                    //     Reference = $"/timesheets/{UniqueIdentifier}/lines"
+                    // });
                     break;
 
                 case TimecardStatus.Approved:
@@ -200,11 +213,7 @@ namespace restapi.Models
         // fanchenjie
         public TimecardLine ReplaceLine(Guid lineId, DocumentLine documentLine)
         {
-            // if (Lines.Any(l => l.UniqueIdentifier == lineId))
-            // {
-            //     Lines.Remove(l => l.UniqueIdentifier == lineId);
-            // }
-            //int index = 0;
+
 
             for (int i=0; i<Lines.Count; i++) {
                 if (Lines[i].UniqueIdentifier == lineId) {
@@ -219,20 +228,13 @@ namespace restapi.Models
 
             return annotatedLine;
 
-            // var annotatedLine = new TimecardLine(documentLine);
 
-            // Lines.Add(annotatedLine);
-
-            // return annotatedLine;
 
         }
 
         public TimecardLine UpdateLine(Guid lineId, DocumentLine documentLine)
         {
-            // if (Lines.Any(l => l.UniqueIdentifier == lineId))
-            // {
-            //     Lines.Remove(l => l.UniqueIdentifier == lineId);
-            // }
+
             int index = 0;
 
             for (int i=0; i<Lines.Count; i++) {
@@ -244,11 +246,7 @@ namespace restapi.Models
 
             return Lines[index];
 
-            // var annotatedLine = new TimecardLine(documentLine);
 
-            // Lines.Add(annotatedLine);
-
-            // return annotatedLine;
 
         }
         // fanchenjie

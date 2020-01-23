@@ -137,7 +137,18 @@ namespace restapi.Controllers
                 var annotatedLine = timecard.AddLine(documentLine);
 
                 repository.Update(timecard);
-                
+
+                // if (timecard.Status == TimecardStatus.Submitted)
+                // {
+                //     var transition = new Transition(backDraft, TimecardStatus.Draft);
+
+                //     logger.LogInformation($"Adding backDraft {transition}");
+
+                //     timecard.Transitions.Add(transition);
+
+                //     repository.Update(timecard);
+                // }
+
                 return Ok(annotatedLine);
             }
             else
